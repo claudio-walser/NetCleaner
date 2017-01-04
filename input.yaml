@@ -1,0 +1,4 @@
+sources:
+  ftp:
+    - 178.82.75.220 # stores a php virus
+    - 77.56.31.49 # stores a trojan horse

@@ -1,0 +1,11 @@
+suspiciousFilesOnly: true # if false it downloads any suspicous file extension for further analysis
+
+suspicousFiles:
+  - Photos.scr
+  - IMG001.exe
+  - info.zip
+
+suspiciousFileTypes:
+  - exe
+  - scr
+  - zip
