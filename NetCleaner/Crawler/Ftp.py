@@ -4,6 +4,7 @@ import sys
 class Ftp(object):
 
   ftp = None
+  serverUrl = None
   tmpPath = '/tmp/ftp-file-to-check'
 
   suspicousFiles = []
@@ -18,6 +19,8 @@ class Ftp(object):
     self.ftp = FTP(ip)
     if not self.ftp.login():
       raise Exception("Not able to connect to given FTP Server %s" % ip)
+
+    self.serverUrl = 'ftp://%s/' % ip
 
   def setSuspiciousFiles(self, suspicousFiles:dict = []):
     self.suspicousFiles = suspicousFiles
@@ -53,7 +56,10 @@ class Ftp(object):
             sys.exit(0)
         else:
           if currentFile['name'] in self.suspicousFiles:
-            self.infectedFileList.append(filePath)
+            self.infectedFileList.append({
+              'path': filePath,
+              'url': '%s%s' % (self.serverUrl, filePath)
+            })
     
     for nextDirectory in nextDirectories:
       self.createList(nextDirectory)
