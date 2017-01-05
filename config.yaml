@@ -1,11 +1,11 @@
-suspiciousFilesOnly: true # if false it downloads any suspicous file extension for further analysis
-
 suspicousFiles:
-  - Photos.scr
+  - Photo.scr
   - IMG001.exe
   - info.zip
+  - w0000000t.php
 
-suspiciousFileTypes:
+downloadToCheck: true # download files to /tmp to check for viruses
+suspiciousFileExtensions: # download only these file types for virus checking
   - exe
   - scr
   - zip
