@@ -1,5 +1,7 @@
 from ftplib import FTP
 import sys
+from NetCleaner.Analyser.Clamscan import Clamscan
+from pprint import pprint
 
 class Ftp(object):
 
@@ -53,6 +55,10 @@ class Ftp(object):
             print("Downloading file %s  to /tmp/ftp-file-to-check" % filePath)
             self.ftp.retrbinary('RETR %s' % filePath, open(self.tmpPath, 'wb').write)
             # check for viruses with clamav and if positive, store filename into suspiciousFileList for simpler checks
+            scanner = Clamscan('/tmp/ftp-file-to-check')
+            scanner.scan()
+            if scanner.getIsVirus():
+              print(scanner.getVirusDefinition())
             sys.exit(0)
         else:
           if currentFile['name'] in self.suspicousFiles:
