@@ -14,7 +14,8 @@ setup(
         'NetCleaner',
         'NetCleaner.Config',
         'NetCleaner.Analyser',
-        'NetCleaner.Crawler'
+        'NetCleaner.Crawler',
+        'NetCleaner.Server'
     ],
     install_requires=['pyyaml'],
     entry_points={
