@@ -20,7 +20,9 @@ setup(
     install_requires=['pyyaml'],
     entry_points={
         'console_scripts': [
-            'nc-memorize = NetCleaner.ncMemorize:main'
+            'nc-memorize = NetCleaner.ncMemorize:main',
+            'nc-server = NetCleaner.ncServer:main',
+            'nc-scanner = NetCleaner.ncScanner:main'
         ]
     }
 )
