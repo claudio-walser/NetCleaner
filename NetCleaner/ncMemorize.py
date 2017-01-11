@@ -3,6 +3,7 @@
 import sys
 import argcomplete
 import argparse
+import json
 from pprint import pprint
 
 # create parser in order to autocomplete
@@ -37,7 +38,19 @@ argcomplete.autocomplete(parser)
 def main():
   print("memorize main function")
 
+
   arguments = parser.parse_args()
-  pprint(arguments)
+  serverType = arguments.type
+  importFile = arguments.file
+
+
+  servers = []
+  for line in open(importFile, 'r'):
+    servers.append(json.loads(line)['ip_str'])
+
+  # with open(importFile, 'r') as stream:
+  #   servers = json.load(stream)
+
+  pprint(servers)
 
 

@@ -17,7 +17,7 @@ setup(
         'NetCleaner.Crawler',
         'NetCleaner.Server'
     ],
-    install_requires=['pyyaml'],
+    install_requires=['pyyaml', 'storm'],
     entry_points={
         'console_scripts': [
             'nc-memorize = NetCleaner.ncMemorize:main',
