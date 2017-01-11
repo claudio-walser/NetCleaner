@@ -18,21 +18,10 @@ Clamscan
 strings
 file
 
+## Configuration
+Configuration file is in /etc/netCleaner/config.yaml
 
-
-
-# DB Scheme
-
-File
-- id
-- name
-- header (comes from Analyser/File)
-- remotePath
-- localPath
-- timestamp
-- virusDetected (comes from Analyser/Clamscan
-
-String (information comes from Analyser/Strings
--id
--fileId
--string
+## Possible usage
+nc-memorize --type ftp --shodanFile shodan.json
+nc-server fingerprint 
+nc-scanner scan --rescan --check-by-download --cleanup
