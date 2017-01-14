@@ -67,3 +67,4 @@ target/
 
 .DS_Store
 exports
+net-cleaner.db

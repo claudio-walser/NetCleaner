@@ -15,11 +15,13 @@ setup(
         'NetCleaner.Config',
         'NetCleaner.Analyser',
         'NetCleaner.Crawler',
-        'NetCleaner.Server'
+        'NetCleaner.Server',
+        'NetCleaner.Model'
     ],
-    install_requires=['pyyaml', 'storm'],
+    install_requires=['pyyaml', 'peewee'],
     entry_points={
         'console_scripts': [
+            'nc-create-database = NetCleaner.ncCreateDatabase:main',
             'nc-memorize = NetCleaner.ncMemorize:main',
             'nc-server = NetCleaner.ncServer:main',
             'nc-scanner = NetCleaner.ncScanner:main'

@@ -33,6 +33,7 @@ class Ftp(object):
     fingerprintHash = hashlib.sha224(bytes(fingerprint, 'utf-8')).hexdigest()
     #print(fingerprint)
     print(fingerprintHash)
+    return fingerprintHash
 
   def getStat(self):
     stat = ""

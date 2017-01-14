@@ -4,7 +4,10 @@ import sys
 import argcomplete
 import argparse
 import json
+import datetime
 from pprint import pprint
+
+from NetCleaner.Model.Server import Server
 
 # create parser in order to autocomplete
 parser = argparse.ArgumentParser()
@@ -38,7 +41,6 @@ argcomplete.autocomplete(parser)
 def main():
   print("memorize main function")
 
-
   arguments = parser.parse_args()
   serverType = arguments.type
   importFile = arguments.file
@@ -46,7 +48,14 @@ def main():
 
   servers = []
   for line in open(importFile, 'r'):
-    servers.append(json.loads(line)['ip_str'])
+    serverIp = json.loads(line)['ip_str']
+    print("adding server ip: %s" % serverIp)
+    server = Server(
+      ip = serverIp,
+      type = serverType,
+      time = datetime.datetime.now()
+    )
+    server.save()
 
   # with open(importFile, 'r') as stream:
   #   servers = json.load(stream)

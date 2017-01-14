@@ -1,10 +1,15 @@
-from storm.locals import *
+from peewee import *
+from NetCleaner.DatabaseConnection import database
+
+class Server(Model):
+  id = PrimaryKeyField()
+  ip = CharField()
+  fingerprint = CharField(null = True)
+  type = CharField()
+  time = DateTimeField()
+  reachable = BooleanField(null = True)
+  anonymous = BooleanField(null = True)
 
 
-
-class Server(object):
-  __storm_table__ = "server"
-  id = Int(primary=True)
-  ip = Unicode()
-  fingerprint = Unicode()
-  type = Unicode()
+  class Meta:
+    database = database
