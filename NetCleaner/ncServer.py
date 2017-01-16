@@ -25,6 +25,8 @@ def main():
   if arguments.fingerprint:
     servers = Server.select().where((Server.fingerprint >> None) & (Server.reachable >> None) & (Server.anonymous >> None))
     for server in servers:
+      print("")
+      print("")
       print("Trying to fingerprint %s" % server.ip)
       try:
         ftp = Ftp(server.ip)
@@ -32,9 +34,12 @@ def main():
         server.anonymous = True
         server.reachable = True
         print("Fingerprinted server: %s" % server.ip)
+        print(server.fingerprint)
       except (ConnectionRefusedError, TimeoutError, OSError):
         server.reachable = False
         print("Server: %s is not reachable" % server.ip)
+      except ftplib.error_temp as e:
+        print("Temp Error: %s" % str(e))
       except ftplib.error_perm:
         server.anonymous = False
         print("Server: %s has no anonymous login" % server.ip)

@@ -21,8 +21,6 @@ class Ftp(object):
 
 
   def fingerprint(self):
-    print("")
-    print("")
     print(self.ip)
     fingerprint = ""
     fingerprint += self.ftp.getwelcome()
@@ -32,7 +30,6 @@ class Ftp(object):
     fingerprint += self.getStat()
     fingerprintHash = hashlib.sha224(bytes(fingerprint, 'utf-8')).hexdigest()
     #print(fingerprint)
-    print(fingerprintHash)
     return fingerprintHash
 
   def getStat(self):
