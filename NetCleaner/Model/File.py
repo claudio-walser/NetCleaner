@@ -6,7 +6,7 @@ class File(Model):
   id = PrimaryKeyField()
   scan = ForeignKeyField(Scan)
   remotePath = CharField()
-  localPath = CharField()
+  localPath = CharField(null = True)
   time = DateTimeField()
 
 

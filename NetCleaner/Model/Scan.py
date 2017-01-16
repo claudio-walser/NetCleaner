@@ -6,7 +6,7 @@ class Scan(Model):
   id = PrimaryKeyField()
   server = ForeignKeyField(Server)
   time = DateTimeField()
-  completed = BooleanField()
+  completed = BooleanField(default = 0)
 
 
   class Meta:
