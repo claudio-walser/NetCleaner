@@ -1,12 +1,9 @@
 #!/usr/bin/env python3
 
-import sys
 import argcomplete
 import argparse
-from pprint import pprint
-from NetCleaner.Model.Server import Server
-from NetCleaner.Server.Ftp import Ftp
-import ftplib
+from NetCleaner.Model import *
+from NetCleaner.Crawler.Ftp import Ftp
 
 # create parser in order to autocomplete
 parser = argparse.ArgumentParser()
@@ -24,25 +21,27 @@ def main():
   arguments = parser.parse_args()
   if arguments.fingerprint:
     servers = Server.select().where((Server.fingerprint >> None) & (Server.reachable >> None) & (Server.anonymous >> None))
+    
     for server in servers:
-      print("")
-      print("")
-      print("Trying to fingerprint %s" % server.ip)
-      try:
-        ftp = Ftp(server.ip)
-        server.fingerprint = ftp.fingerprint()
-        server.anonymous = True
-        server.reachable = True
-        print("Fingerprinted server: %s" % server.ip)
-        print(server.fingerprint)
-      except (ConnectionRefusedError, TimeoutError, OSError):
-        server.reachable = False
-        print("Server: %s is not reachable" % server.ip)
-      except ftplib.error_temp as e:
-        print("Temp Error: %s" % str(e))
-      except ftplib.error_perm:
-        server.anonymous = False
-        print("Server: %s has no anonymous login" % server.ip)
-        pass
+      print()
+      print()
+      if server.type == 'ftp':
+        try:
+          crawler = Ftp(server.ip)
+          crawler.connect()
+          crawler.login()
+          server.fingerprint = crawler.fingerprint()
+
+          print("Fingerprinted server %s" % server.ip)
+          print(server.fingerprint)
+        except:
+
+          server.reachable = crawler.isReachable()
+          server.anonymous = crawler.hasAnonymousLogin()
+          print("Failed to fingerprint")
+          print("reachable: %s" % server.reachable)
+          print("anonymous login: %s" % server.anonymous)
+      else:
+        raise Exception("No crawler for server type: %s" % server.type)
 
       server.save()

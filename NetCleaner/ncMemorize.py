@@ -7,7 +7,7 @@ import json
 import datetime
 from pprint import pprint
 
-from NetCleaner.Model.Server import Server
+from NetCleaner.Model import *
 
 # create parser in order to autocomplete
 parser = argparse.ArgumentParser()

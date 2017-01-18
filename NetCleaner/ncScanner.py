@@ -3,9 +3,8 @@ import sys
 import argcomplete
 import argparse
 from NetCleaner.Crawler.Ftp import Ftp
-from NetCleaner.Model.Server import Server
+from NetCleaner.Model import *
 from pprint import pprint
-from NetCleaner.Config.Config import Config
 
 # create parser in order to autocomplete
 parser = argparse.ArgumentParser()
@@ -31,28 +30,41 @@ parser.add_argument(
 
 argcomplete.autocomplete(parser)
 
+def crawl(crawler, path):
+  files = crawler.getFiles(path)
+  directories = crawler.getDirectories(path)
+
+  pprint(files)
+  pprint(directories)
+  pass
+
 
 def main():
   print("starting scanner")
   arguments = parser.parse_args()
-  config = Config()
   servers = Server.select()
   for server in servers:
     print("Scanning %s" % server.ip)
     crawler = Ftp(server)
-    # if str(server.type) is 'ftp':
-    #   crawler = Ftp(server)
-    # else:
-    #   raise Exception("No crawler found for type %s" % server.type)
+    if server.type == 'ftp':
+      crawler = Ftp(server.ip)
+      crawler.connect()
+      crawler.login()
+    else:
+      raise Exception("No crawler for server type: %s" % server.type)
 
-    crawler.setSuspiciousFiles(config.get('suspicousFiles'))
-    crawler.setDownloadToCheck(config.get('downloadToCheck'))
-    crawler.setSuspiciousFileExtensions(config.get('suspiciousFileExtensions'))
-    crawler.crawl()
+    crawl(crawler, '/')
+
     crawler.close()
 
-    print("Get infected file list on server %s" % server.ip)
-    pprint(crawler.getInfectedFiles())
+    # crawler.setSuspiciousFiles(config.get('suspicousFiles'))
+    # crawler.setDownloadToCheck(config.get('downloadToCheck'))
+    # crawler.setSuspiciousFileExtensions(config.get('suspiciousFileExtensions'))
+    # crawler.crawl()
+    # crawler.close()
+
+    # print("Get infected file list on server %s" % server.ip)
+    # pprint(crawler.getInfectedFiles())
 
 
   #pprint(arguments)

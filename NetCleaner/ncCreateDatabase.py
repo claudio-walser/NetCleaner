@@ -1,9 +1,5 @@
 #!/usr/bin/env python3
-from NetCleaner.Model.Server import Server
-from NetCleaner.Model.Scan import Scan
-from NetCleaner.Model.File import File
-from NetCleaner.Model.Virus import Virus
-from NetCleaner.Model.String import String
+from NetCleaner.Model import *
 from peewee import *
 
 

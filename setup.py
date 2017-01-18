@@ -12,13 +12,10 @@ setup(
     packages=[
         '.',
         'NetCleaner',
-        'NetCleaner.Config',
         'NetCleaner.Analyser',
-        'NetCleaner.Crawler',
-        'NetCleaner.Server',
-        'NetCleaner.Model'
+        'NetCleaner.Crawler'
     ],
-    install_requires=['pyyaml', 'peewee'],
+    install_requires=['pyyaml', 'peewee', 'argparse', 'argcomplete'],
     entry_points={
         'console_scripts': [
             'nc-create-database = NetCleaner.ncCreateDatabase:main',
