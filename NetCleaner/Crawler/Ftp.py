@@ -10,6 +10,7 @@ from pprint import pprint
 import os
 import shutil
 import datetime
+import socket
 
 
 class Ftp(object):
@@ -35,6 +36,10 @@ class Ftp(object):
     if not self.ftp.login():
       raise Exception("Not able to connect to given FTP Server %s" % server.ip)
 
+    self.ftp.sock.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1)
+    self.ftp.sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPINTVL, 10)
+    self.ftp.sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPIDLE, 10)
+    #self.ftp.set_debuglevel(2)
     self.serverUrl = 'ftp://%s/' % server.ip
 
   def setSuspiciousFiles(self, suspicousFiles:dict = []):
@@ -58,8 +63,12 @@ class Ftp(object):
 
   def createList(self, path:str = "/"):
     self.currentFileList = []
-    self.ftp.dir(path, self.checkDirectory)
-
+    try:
+      print("Switch to directory %s" % path)
+      self.ftp.dir(path, self.checkDirectory)
+    except (ftplib.error_temp, EOFError) as e:
+      print("error switching to %s" % path)
+      print(str(e))
     nextDirectories = []
     for currentFile in self.currentFileList:
       if currentFile['type'] is 'directory':
@@ -98,13 +107,13 @@ class Ftp(object):
               )
               virus.save()
 
-              strings = Strings("%s%s" % (destinationPath, currentFile['name']))
-              for line in strings.get():
-                string = String(
-                  virus = virus,
-                  content = line
-                )
-                string.save()
+              #strings = Strings("%s%s" % (destinationPath, currentFile['name']))
+              #for line in strings.get():
+              #  string = String(
+              #    virus = virus,
+              #    content = line
+              #  )
+              #  string.save()
                 
               self.infectedFileList.append({
                 'path': filePath,
