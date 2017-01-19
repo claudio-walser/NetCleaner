@@ -1,9 +1,16 @@
 #!/usr/bin/env python3
+# PYTHON_ARGCOMPLETE_OK
+
 import sys
 import argcomplete
 import argparse
 from NetCleaner.Crawler.Ftp import Ftp
+from NetCleaner.Analyser.Clamscan import Clamscan
 from NetCleaner.Model import *
+import shutil
+import datetime
+import os
+import ftplib
 from pprint import pprint
 
 # create parser in order to autocomplete
@@ -29,19 +36,60 @@ parser.add_argument(
 )
 
 argcomplete.autocomplete(parser)
+arguments = parser.parse_args()
+tmpFile = '/tmp/ftp-file-to-check'
 
-def crawl(crawler, path):
+def crawl(crawler, path, scan, server):
+  print("crawling %s" % path)
   files = crawler.getFiles(path)
   directories = crawler.getDirectories(path)
-
+  print("files from directory: %s " % path)
   pprint(files)
+  print("directories from directory: %s " % path)
   pprint(directories)
-  pass
 
+  try:
+    # todo implement reconnect in case of timeout or EORError
+    for file in files:
+      filePath = "%s/%s" % (path, file)
+      try:
+        fileModel = File(
+          scan = scan,
+          remotePath = filePath,
+          time = datetime.datetime.now()
+        )
+        fileModel.save()
+
+        crawler.downloadFile(filePath, tmpFile)
+
+        scanner = Clamscan(tmpFile)
+        scanner.scan()
+        if scanner.getIsVirus():
+          destinationPath = "downloadedFiles/ftp-%s/%s%s" % (server.ip, scan.time, path)
+          if not os.path.exists(destinationPath):
+            os.makedirs(destinationPath)
+
+          shutil.move('/tmp/ftp-file-to-check', "%s/%s" % (destinationPath, file))
+          fileModel.localPath = "%s%s" % (destinationPath, file)
+          fileModel.save()
+
+          virus = Virus(
+            file = fileModel,
+            definition = scanner.getVirusDefinition()
+          )
+          virus.save()
+
+      except ftplib.error_perm:
+        print("no permissions to download file")
+
+    for directory in directories:
+      crawl(crawler, "%s/%s" % (path, directory), scan, server)
+  except Exception as e:
+    raise e
+    print("Exception occured: %s" % str(e))
 
 def main():
   print("starting scanner")
-  arguments = parser.parse_args()
   servers = Server.select()
   for server in servers:
     print("Scanning %s" % server.ip)
@@ -58,7 +106,12 @@ def main():
     else:
       raise Exception("No crawler for server type: %s" % server.type)
 
-    crawl(crawler, '/')
+    scan = Scan(
+      server = server,
+      time = datetime.datetime.now()
+    )
+    scan.save()
+    crawl(crawler, '', scan, server)
 
     crawler.close()
 

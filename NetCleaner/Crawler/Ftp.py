@@ -9,6 +9,8 @@ class Ftp(object):
   ip = None
   reachable = False
   anonymousLogin = False
+  paths = {}
+  currentFileList = []
 
   def __init__(self, ip:str):
     self.ip = ip
@@ -56,18 +58,58 @@ class Ftp(object):
         stat += "%s\n" % (statLine)
     return stat
 
+  def downloadFile(self, sourceFile, targetFile):
+    print("Downloading %s to %s" % (sourceFile, targetFile))
+    self.ftp.retrbinary('RETR %s' % sourceFile, open(targetFile, 'wb').write)
+
+  def readPath(self, path):
+    self.currentFileList = []
+    try:
+      self.ftp.dir(path, self.checkDirOutput)
+    except:
+      self.paths[path] = {
+        'files': [],
+        'directories': []
+      }
+
+    files = []
+    directories = []
+    for currentFile in self.currentFileList:
+      if currentFile['type'] is 'file':
+        files.append(currentFile['name'])
+      else:
+        directories.append(currentFile['name'])
+    self.paths[path] = {
+      'files': files,
+      'directories': directories
+    }
+    # todo read modify date by MDTM
+
   def getFiles(self, path:str):
-    return []
+    if not path in self.paths:
+      self.readPath(path)
+    return self.paths[path]['files']
 
   def getDirectories(self, path:str):
-    return []
+    if not path in self.paths:
+      self.readPath(path)
+    return self.paths[path]['directories']
 
   def checkDirOutput(self, output):
     lines = output.split("\n")
     for line in lines:
       lineParts = line.split()
+      lineParts.pop(0)
+      lineParts.pop(0)
+      lineParts.pop(0)
+      lineParts.pop(0)
+      lineParts.pop(0)
+      lineParts.pop(0)
+      lineParts.pop(0)
+      lineParts.pop(0)
+      filename = " ".join(lineParts)
       fileObject = {
-        'name': lineParts.pop(),
+        'name': filename,
         'type': None
       }
       if line.startswith("d"):
@@ -76,8 +118,6 @@ class Ftp(object):
         fileObject['type'] = 'file'
 
       self.currentFileList.append(fileObject)
-
-
 
   def close(self):
     if self.ftp is None:
