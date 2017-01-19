@@ -63,5 +63,7 @@ class Ftp(object):
     return []
 
   def close(self):
+    if self.ftp is None:
+      return
     self.ftp.quit()
     self.ftp.close()

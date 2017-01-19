@@ -47,9 +47,14 @@ def main():
     print("Scanning %s" % server.ip)
     crawler = Ftp(server)
     if server.type == 'ftp':
-      crawler = Ftp(server.ip)
-      crawler.connect()
-      crawler.login()
+      try:
+        crawler = Ftp(server.ip)
+        crawler.connect()
+        crawler.login()
+      except:
+        server.reachable = crawler.isReachable()
+        server.anonymous = crawler.hasAnonymousLogin()
+        server.save()
     else:
       raise Exception("No crawler for server type: %s" % server.type)
 
