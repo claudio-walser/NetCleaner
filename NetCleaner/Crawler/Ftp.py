@@ -62,6 +62,23 @@ class Ftp(object):
   def getDirectories(self, path:str):
     return []
 
+  def checkDirOutput(self, output):
+    lines = output.split("\n")
+    for line in lines:
+      lineParts = line.split()
+      fileObject = {
+        'name': lineParts.pop(),
+        'type': None
+      }
+      if line.startswith("d"):
+        fileObject['type'] = 'directory'
+      else:
+        fileObject['type'] = 'file'
+
+      self.currentFileList.append(fileObject)
+
+
+
   def close(self):
     if self.ftp is None:
       return
