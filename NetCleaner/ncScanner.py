@@ -65,6 +65,11 @@ def crawl(crawler, path, scan, server):
         scanner = Clamscan(tmpFile)
         scanner.scan()
         if scanner.getIsVirus():
+          if arguments.cleanup is True:
+            try:
+              crawler.deleteFile(filePath)
+            except ftplib.error_perm:
+              print("No permissions to delete file %s" % filePath)
           destinationPath = "downloadedFiles/ftp-%s/%s%s" % (server.ip, scan.time, path)
           if not os.path.exists(destinationPath):
             os.makedirs(destinationPath)

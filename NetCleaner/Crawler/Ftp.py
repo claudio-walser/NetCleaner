@@ -58,6 +58,9 @@ class Ftp(object):
         stat += "%s\n" % (statLine)
     return stat
 
+  def deleteFile(self, filename):
+    self.ftp.delete(filename)
+
   def downloadFile(self, sourceFile, targetFile):
     print("Downloading %s to %s" % (sourceFile, targetFile))
     self.ftp.retrbinary('RETR %s' % sourceFile, open(targetFile, 'wb').write)
