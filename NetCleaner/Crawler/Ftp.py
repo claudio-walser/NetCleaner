@@ -61,6 +61,11 @@ class Ftp(object):
   def deleteFile(self, filename):
     self.ftp.delete(filename)
 
+  def getModifyDate(self, filename):
+    output = self.ftp.sendcmd('MDTM %s' % filename)
+    print("Filetime")
+    print(output)
+
   def downloadFile(self, sourceFile, targetFile):
     print("Downloading %s to %s" % (sourceFile, targetFile))
     self.ftp.retrbinary('RETR %s' % sourceFile, open(targetFile, 'wb').write)
@@ -123,6 +128,9 @@ class Ftp(object):
       self.currentFileList.append(fileObject)
 
   def close(self):
+    self.paths = []
+    self.reachable = False
+    self.anonymousLogin = False
     if self.ftp is None:
       return
     self.ftp.quit()

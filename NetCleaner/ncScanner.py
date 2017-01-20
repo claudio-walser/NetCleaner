@@ -65,6 +65,10 @@ def crawl(crawler, path, scan, server):
         scanner = Clamscan(tmpFile)
         scanner.scan()
         if scanner.getIsVirus():
+          try:
+            crawler.getModifyDate(filePath)
+          except Exception as e:
+            print(str(e))
           if arguments.cleanup is True:
             try:
               crawler.deleteFile(filePath)
@@ -117,19 +121,4 @@ def main():
     )
     scan.save()
     crawl(crawler, '', scan, server)
-
     crawler.close()
-
-    # crawler.setSuspiciousFiles(config.get('suspicousFiles'))
-    # crawler.setDownloadToCheck(config.get('downloadToCheck'))
-    # crawler.setSuspiciousFileExtensions(config.get('suspiciousFileExtensions'))
-    # crawler.crawl()
-    # crawler.close()
-
-    # print("Get infected file list on server %s" % server.ip)
-    # pprint(crawler.getInfectedFiles())
-
-
-  #pprint(arguments)
-
-
