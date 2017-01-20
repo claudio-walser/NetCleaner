@@ -79,7 +79,7 @@ def crawl(crawler, path, scan, server):
             os.makedirs(destinationPath)
 
           shutil.move('/tmp/ftp-file-to-check', "%s/%s" % (destinationPath, file))
-          fileModel.localPath = "%s%s" % (destinationPath, file)
+          fileModel.localPath = "%s/%s" % (destinationPath, file)
           fileModel.save()
 
           virus = Virus(
@@ -99,7 +99,7 @@ def crawl(crawler, path, scan, server):
 
 def main():
   print("starting scanner")
-  servers = Server.select()
+  servers = Server.select().where((Server.reachable == True) & (Server.anonymous == True))
   for server in servers:
     print("Scanning %s" % server.ip)
     crawler = Ftp(server)

@@ -36,13 +36,9 @@ def main():
           print("Fingerprinted server %s" % server.ip)
           print(server.fingerprint)
         except:
-
-          server.reachable = crawler.isReachable()
-          server.anonymous = crawler.hasAnonymousLogin()
-          print("Failed to fingerprint")
-          print("reachable: %s" % server.reachable)
-          print("anonymous login: %s" % server.anonymous)
+          print("Failed to fingerprint %s" % server.ip)
       else:
         raise Exception("No crawler for server type: %s" % server.type)
-
+      server.reachable = crawler.isReachable()
+      server.anonymous = crawler.hasAnonymousLogin()
       server.save()

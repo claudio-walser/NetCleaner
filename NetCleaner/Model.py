@@ -1,6 +1,8 @@
 from peewee import *
 
-database = SqliteDatabase("net-cleaner.db")
+#database = SqliteDatabase("net-cleaner.db")
+database = MySQLDatabase('net-cleaner')
+database.init('net-cleaner', host='localhost', user='root')
 
 class Server(Model):
   id = PrimaryKeyField()
@@ -38,7 +40,7 @@ class File(Model):
 
 class Virus(Model):
   id = PrimaryKeyField()
-  file = ForeignKeyField(Scan)
+  file = ForeignKeyField(File)
   definition = CharField()
 
   class Meta:

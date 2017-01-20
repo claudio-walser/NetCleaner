@@ -1,7 +1,7 @@
 from ftplib import FTP
 import socket
 import hashlib
-
+import datetime
 
 class Ftp(object):
 
@@ -63,6 +63,12 @@ class Ftp(object):
 
   def getModifyDate(self, filename):
     output = self.ftp.sendcmd('MDTM %s' % filename)
+    if output.startswith("550"):
+      return None
+    elif output.startswith("213"):
+      print("got response")
+
+
     print("Filetime")
     print(output)
 

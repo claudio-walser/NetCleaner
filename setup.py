@@ -15,7 +15,7 @@ setup(
         'NetCleaner.Analyser',
         'NetCleaner.Crawler'
     ],
-    install_requires=['pyyaml', 'peewee', 'argparse', 'argcomplete'],
+    install_requires=['pyyaml', 'peewee', 'PyMySQL', 'argparse', 'argcomplete'],
     entry_points={
         'console_scripts': [
             'nc-create-database = NetCleaner.ncCreateDatabase:main',
