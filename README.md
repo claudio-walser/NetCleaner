@@ -25,7 +25,7 @@ Run the scanner and store infected files
 nc-scanner --check-by-download 
 ```
 
-If you want to delete infected file on the remote host, run the same command with --cleanup
+If you want to delete infected files on the remote host, run the same command with --cleanup
 Take care of your local law, delete files on devices dont belong to you could be illegal. Even if you doing it for good. 
 ```
 nc-scanner --check-by-download --cleanup
