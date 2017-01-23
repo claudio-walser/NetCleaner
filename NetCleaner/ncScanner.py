@@ -6,11 +6,14 @@ import argcomplete
 import argparse
 from NetCleaner.Crawler.Ftp import Ftp
 from NetCleaner.Analyser.Clamscan import Clamscan
+from NetCleaner.Analyser.File import File as FileScanner
+from NetCleaner.Analyser.Strings import Strings
 from NetCleaner.Model import *
 import shutil
 import datetime
 import os
 import ftplib
+import _thread
 from pprint import pprint
 
 # create parser in order to autocomplete
@@ -39,6 +42,23 @@ argcomplete.autocomplete(parser)
 arguments = parser.parse_args()
 tmpFile = '/tmp/ftp-file-to-check'
 
+def additionalInformation(fileModel, virusModel):
+  print("start with further analysis of %s" % fileModel.localPath)
+  fileScanner = FileScanner(fileModel.localPath)
+  fileScanner.scan()
+  fileModel.header = fileScanner.getDefinition()
+
+  stringScanner = Strings(fileModel.localPath)
+  strings =  stringScanner.get()
+
+  for string in strings:
+    stringModel = String(
+      virus = virusModel,
+      content = string
+    )
+    stringModel.save()
+
+
 def crawl(crawler, path, scan, server):
   print("crawling %s" % path)
   files = crawler.getFiles(path)
@@ -66,7 +86,7 @@ def crawl(crawler, path, scan, server):
         scanner.scan()
         if scanner.getIsVirus():
           try:
-            crawler.getModifyDate(filePath)
+            fileModel.remoteTime = crawler.getModifyDate(filePath)
           except Exception as e:
             print(str(e))
           if arguments.cleanup is True:
@@ -87,6 +107,10 @@ def crawl(crawler, path, scan, server):
             definition = scanner.getVirusDefinition()
           )
           virus.save()
+
+          # get some additional information in a separated thread
+          _thread.start_new_thread(additionalInformation, (fileModel, virus))
+
 
       except ftplib.error_perm:
         print("no permissions to download file")

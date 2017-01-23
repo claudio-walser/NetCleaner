@@ -3,6 +3,8 @@ import socket
 import hashlib
 import datetime
 
+from pprint import pprint
+
 class Ftp(object):
 
   ftp = None
@@ -67,14 +69,19 @@ class Ftp(object):
 
   def getModifyDate(self, filename):
     output = self.ftp.sendcmd('MDTM %s' % filename)
-    if output.startswith("550"):
-      return None
-    elif output.startswith("213"):
-      print("got response")
+    if output.startswith("213"):
+      output = output.split(" ")
+      datestring = output[1]
+      year = datestring[:4]
+      month = datestring[4:6]
+      day = datestring[6:8]
+      hour = datestring[8:10]
+      minute = datestring[10:12]
+      second = datestring[12:14]
+      date = datetime.datetime(int(year), int(month), int(day), int(hour), int(minute), int(second))
+      return date
 
-
-    print("Filetime")
-    print(output)
+    return None
 
   def downloadFile(self, sourceFile, targetFile):
     print("Downloading %s to %s" % (sourceFile, targetFile))

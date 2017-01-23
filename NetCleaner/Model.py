@@ -2,7 +2,7 @@ from peewee import *
 
 #database = SqliteDatabase("net-cleaner.db")
 database = MySQLDatabase('net-cleaner', charset='utf8')
-database.init('net-cleaner', host='localhost', user='root')
+database.init('net-cleaner', host='localhost', user='root', password='test')
 
 
 class Server(Model):
@@ -34,6 +34,8 @@ class File(Model):
   remotePath = CharField()
   localPath = CharField(null = True)
   time = DateTimeField()
+  remoteTime = DateTimeField(null = True)
+  header = CharField(null = True)
 
   class Meta:
     database = database
