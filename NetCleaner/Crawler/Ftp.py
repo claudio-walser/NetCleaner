@@ -13,11 +13,15 @@ class Ftp(object):
   currentFileList = []
 
   def __init__(self, ip:str):
+    self.paths = {}
+    self.reachable = False
+    self.anonymousLogin = False
     self.ip = ip
 
   def connect(self):
     self.ftp = FTP(self.ip)
     self.reachable = True
+    self.ftp.encoding='utf-8'
     self.ftp.sock.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1)
     self.ftp.sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPINTVL, 10)
     self.ftp.sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPIDLE, 10)
@@ -134,7 +138,7 @@ class Ftp(object):
       self.currentFileList.append(fileObject)
 
   def close(self):
-    self.paths = []
+    self.paths = {}
     self.reachable = False
     self.anonymousLogin = False
     if self.ftp is None:
