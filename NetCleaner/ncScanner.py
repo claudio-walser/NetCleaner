@@ -5,6 +5,7 @@ import sys
 import argcomplete
 import argparse
 from NetCleaner.Crawler.Ftp import Ftp
+from NetCleaner.Crawler.Iomega import Iomega
 from NetCleaner.Analyser.Clamscan import Clamscan
 from NetCleaner.Analyser.File import File as FileScanner
 from NetCleaner.Analyser.Strings import Strings
@@ -126,16 +127,22 @@ def main():
   servers = Server.select().where((Server.reachable == True) & (Server.anonymous == True))
   for server in servers:
     print("Scanning %s" % server.ip)
-    crawler = Ftp(server)
-    if server.type == 'ftp':
-      try:
+    
+    try:
+      if server.type == 'ftp':
         crawler = Ftp(server.ip)
-        crawler.connect()
-        crawler.login()
-      except:
-        server.reachable = crawler.isReachable()
-        server.anonymous = crawler.hasAnonymousLogin()
-        server.save()
+      if server.type == 'iomega':
+        print("Start scanning iomega")
+        crawler = Iomega(server.ip)
+
+
+      crawler.connect()
+      crawler.login()
+  
+    except:
+      server.reachable = crawler.isReachable()
+      server.anonymous = crawler.hasAnonymousLogin()
+      server.save()
     else:
       raise Exception("No crawler for server type: %s" % server.type)
 

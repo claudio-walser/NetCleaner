@@ -5,6 +5,7 @@ import argcomplete
 import argparse
 from NetCleaner.Model import *
 from NetCleaner.Crawler.Ftp import Ftp
+from NetCleaner.Crawler.Iomega import Iomega
 
 # create parser in order to autocomplete
 parser = argparse.ArgumentParser()
@@ -26,19 +27,23 @@ def main():
     for server in servers:
       print()
       print()
-      if server.type == 'ftp':
-        try:
+      
+      try:
+        if server.type == 'ftp':
           crawler = Ftp(server.ip)
-          crawler.connect()
-          crawler.login()
-          server.fingerprint = crawler.fingerprint()
+        elif server.type == 'iomega':
+          crawler = Iomega(server.ip)
+        else:
+          raise Exception("No crawler for server type: %s" % server.type)
+        crawler.connect()
+        crawler.login()
+        server.fingerprint = crawler.fingerprint()
 
-          print("Fingerprinted server %s" % server.ip)
-          print(server.fingerprint)
-        except:
-          print("Failed to fingerprint %s" % server.ip)
-      else:
-        raise Exception("No crawler for server type: %s" % server.type)
+        print("Fingerprinted server %s" % server.ip)
+        print(server.fingerprint)
+      except:
+        print("Failed to fingerprint %s" % server.ip)
+
       server.reachable = crawler.isReachable()
       server.anonymous = crawler.hasAnonymousLogin()
       server.save()
