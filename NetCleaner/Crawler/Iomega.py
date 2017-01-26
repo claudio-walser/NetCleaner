@@ -115,7 +115,7 @@ class Iomega(object):
       for item in r.json()['items']:
         pprint(item)
         if item['access'] == 'readwrite' or item['access'] == 'read':
-          if 'folder' in item and item['type'] == 'folder':
+          if 'type' in item and item['type'] == 'folder':
             directories.append(item['name'])
           else:
             files.append(item['name'])
