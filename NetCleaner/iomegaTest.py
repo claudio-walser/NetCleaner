@@ -8,6 +8,7 @@ import urllib
 url = 'https://178.248.207.118/cp/FolderContents?v=2.3'
 
 
+
 # get root nodes
 url = 'https://178.248.207.118/cp/Shares?v=2.3&user=&protocol=webaccess'
 r = requests.get(url, verify=False)
@@ -19,9 +20,15 @@ for item in r.json()['items']:
 pprint(rootNodes)
 
 for rootNode in rootNodes:
+  testNode = {
+    'name': rootNode
+  }
   print(rootNode)
+  parsed = urllib.parse.urlencode(testNode)
+  folderName = parsed.replace('name=', '')
+  print("now do the payload")
   payload = {
-    'path': urllib.urlencode(rootNode),
+    'path': folderName,
     'sortby': 'name',
     'max': 10000,
     'start': 0,
