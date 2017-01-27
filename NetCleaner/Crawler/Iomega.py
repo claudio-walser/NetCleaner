@@ -6,7 +6,9 @@ import requests
 import urllib
 from pprint import pprint
 import sys
-
+# disable InsecureRequestWarning
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 # from pprint import pprint
 
@@ -81,6 +83,7 @@ class Iomega(object):
     return None
 
   def downloadFile(self, sourceFile, targetFile):
+    print("Downloading %s to %s" % (sourceFile, targetFile))
     with open(targetFile, 'wb') as handle:
         response = requests.get("https://%s%s" % (self.ip, sourceFile), stream=True, verify=False)
         if not response.ok:
@@ -100,8 +103,7 @@ class Iomega(object):
       parseNode = {
         'name': path
       }
-      parsed = urllib.parse.urlencode(parseNode)
-      folderName = parsed.replace('name=', '')
+      folderName = urllib.quote_plus(path)
 
       payload = {
         'path': folderName,
