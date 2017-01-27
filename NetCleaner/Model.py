@@ -2,7 +2,7 @@ from peewee import *
 
 #database = SqliteDatabase("net-cleaner.db")
 database = MySQLDatabase('net-cleaner', charset='utf8')
-database.init('net-cleaner', host='localhost', user='root', password='test')
+database.init('net-cleaner', host='localhost', user='root')
 
 
 class Server(Model):

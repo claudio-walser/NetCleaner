@@ -72,7 +72,8 @@ def crawl(crawler, path, scan, server):
   try:
     # todo implement reconnect in case of timeout or EORError
     for file in files:
-      filePath = "%s/%s" % (path, file)
+      fileName = file['name']
+      filePath = file['url']
       try:
         fileModel = File(
           scan = scan,
@@ -99,8 +100,8 @@ def crawl(crawler, path, scan, server):
           if not os.path.exists(destinationPath):
             os.makedirs(destinationPath)
 
-          shutil.move('/tmp/ftp-file-to-check', "%s/%s" % (destinationPath, file))
-          fileModel.localPath = "%s/%s" % (destinationPath, file)
+          shutil.move('/tmp/ftp-file-to-check', "%s/%s" % (destinationPath, fileName))
+          fileModel.localPath = "%s/%s" % (destinationPath, fileName)
           fileModel.save()
 
           virus = Virus(
@@ -117,7 +118,7 @@ def crawl(crawler, path, scan, server):
         print("no permissions to download file")
 
     for directory in directories:
-      crawl(crawler, "%s/%s" % (path, directory), scan, server)
+      crawl(crawler, directory['url'], scan, server)
   except Exception as e:
     raise e
     print("Exception occured: %s" % str(e))
@@ -127,7 +128,7 @@ def main():
   servers = Server.select().where((Server.reachable == True) & (Server.anonymous == True))
   for server in servers:
     print("Scanning %s" % server.ip)
-    
+
     try:
       if server.type == 'ftp':
         crawler = Ftp(server.ip)
@@ -138,7 +139,7 @@ def main():
 
       crawler.connect()
       crawler.login()
-  
+
     except:
       server.reachable = crawler.isReachable()
       server.anonymous = crawler.hasAnonymousLogin()

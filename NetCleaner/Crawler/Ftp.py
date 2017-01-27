@@ -101,9 +101,15 @@ class Ftp(object):
     directories = []
     for currentFile in self.currentFileList:
       if currentFile['type'] is 'file':
-        files.append(currentFile['name'])
+        files.append({
+            'name': currentFile['name'],
+            'url': "%s/%s" % (path, currentFile['name'])
+        })
       else:
-        directories.append(currentFile['name'])
+        directories.append({
+            'name': currentFile['name'],
+            'url': "%s/%s" % (path, currentFile['name'])
+        })
     self.paths[path] = {
       'files': files,
       'directories': directories

@@ -5,7 +5,7 @@ import datetime
 import requests
 import urllib
 from pprint import pprint
-
+import sys
 
 
 # from pprint import pprint
@@ -44,7 +44,7 @@ class Iomega(object):
   reachable = False
   anonymousLogin = False
   paths = {}
-  
+
   def __init__(self, ip:str):
     self.paths = {}
     self.reachable = False
@@ -81,21 +81,22 @@ class Iomega(object):
     return None
 
   def downloadFile(self, sourceFile, targetFile):
-    pass
+    with open(targetFile, 'wb') as handle:
+        response = requests.get("https://%s%s" % (self.ip, sourceFile), stream=True, verify=False)
+        if not response.ok:
+            return False
+        for block in response.iter_content(1024):
+            handle.write(block)
+        return True
 
   def readPath(self, path:str):
     directories = []
     files = []
     realPath = path
-    if not path == '':
-      path = path[1:]
 
     if path == '':
       directories = self.readRootNodes()
     else:
-      print(path)
-      print(path[1:])
-
       parseNode = {
         'name': path
       }
@@ -113,12 +114,17 @@ class Iomega(object):
       r = requests.post(url, data=payload, verify=False)
 
       for item in r.json()['items']:
-        pprint(item)
         if item['access'] == 'readwrite' or item['access'] == 'read':
           if 'type' in item and item['type'] == 'folder':
-            directories.append(item['name'])
+            directories.append({
+                'name': item['name'],
+                'url': "%s/%s" % (path, item['name'])
+            })
           else:
-            files.append(item['name'])
+            files.append({
+                'name': item['name'],
+                'url': item['url']
+            })
 
     self.paths[realPath] = {
       'files': files,
@@ -131,12 +137,12 @@ class Iomega(object):
     url = 'https://%s/cp/Shares?v=2.3&user=&protocol=webaccess' % self.ip
     r = requests.get(url, verify=False)
     for item in r.json()['items']:
-      pprint(item)
       if item['access'] == 'readwrite' or item['access'] == 'read':
-        rootNodes.append(item['name'])
+        rootNodes.append({
+          'name': item['name'],
+          'url': item['name']
+        })
 
-    print("getting root nodes")
-    pprint(rootNodes)
     return rootNodes
 
   def getFiles(self, path:str):
