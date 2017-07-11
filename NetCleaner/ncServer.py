@@ -30,6 +30,7 @@ def main():
       
       try:
         if server.type == 'ftp':
+          print("Add ftp server for fingerprinting")
           crawler = Ftp(server.ip)
         elif server.type == 'iomega':
           crawler = Iomega(server.ip)
@@ -41,8 +42,9 @@ def main():
 
         print("Fingerprinted server %s" % server.ip)
         print(server.fingerprint)
-      except:
+      except Exception as e:
         print("Failed to fingerprint %s" % server.ip)
+        raise e
 
       server.reachable = crawler.isReachable()
       server.anonymous = crawler.hasAnonymousLogin()

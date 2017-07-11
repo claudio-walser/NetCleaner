@@ -130,7 +130,7 @@ def main():
     print("Scanning %s" % server.ip)
 
     try:
-      if server.type == 'ftp':
+      if server.type is 'ftp':
         crawler = Ftp(server.ip)
       if server.type == 'iomega':
         print("Start scanning iomega")
@@ -145,7 +145,7 @@ def main():
       server.anonymous = crawler.hasAnonymousLogin()
       server.save()
     else:
-      raise Exception("No crawler for server type: %s" % server.type)
+      raise Exception("No crawler for server type: '%s'" % server.type)
 
     scan = Scan(
       server = server,
